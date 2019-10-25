@@ -58,10 +58,11 @@ public class Service implements Runnable
         }
     }
 
-    private WebClient createWebClient()
+    private WebClient createWebClient(int timeout)
     {
         final WebClient webClient = new WebClient();
         final WebClientOptions options = webClient.getOptions();
+        options.setTimeout(timeout);
         options.setThrowExceptionOnFailingStatusCode(false);
         options.setThrowExceptionOnScriptError(false);
         options.setPrintContentOnFailingStatusCode(false);
@@ -81,7 +82,7 @@ public class Service implements Runnable
         if (url != null)
         {
             final ArrayList<String> xpath = request_parameters.remove("xpath");
-            try (final WebClient webClient = createWebClient())
+            try (final WebClient webClient = createWebClient(timeout))
             {
                 final HtmlPage page = webClient.getPage(url.get(0));
                 webClient.waitForBackgroundJavaScriptStartingBefore(timeout);
