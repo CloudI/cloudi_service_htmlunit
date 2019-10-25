@@ -6,6 +6,7 @@ package org.cloudi.examples.htmlunit;
 import java.io.PrintStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 import com.beust.jcommander.JCommander;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import org.cloudi.API;
@@ -23,14 +24,24 @@ public class Main
 
     public static void main(String[] args_in)
     {
+        Arguments args_out = new Arguments();
+        JCommander.newBuilder()
+                  .addObject(args_out)
+                  .build()
+                  .parse(args_in);
+        Main.arguments_parsed = args_out;
+
+        BrowserVersion.setDefault(Main.arguments().getBrowser());
+        if (Main.arguments().getVerbose() == false)
+        {
+            System.setProperty("org.apache.commons.logging.Log",
+                               "org.apache.commons.logging.impl.NoOpLog");
+            java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                                    .setLevel(Level.OFF);
+        }
+
         try
         {
-            Arguments args_out = new Arguments();
-            new JCommander(args_out, args_in);
-            Main.arguments_parsed = args_out;
-
-            BrowserVersion.setDefault(Main.arguments().getBrowser());
-
             final int thread_count = API.thread_count();
             ExecutorService threads =
                 Executors.newFixedThreadPool(thread_count);

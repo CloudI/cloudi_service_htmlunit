@@ -11,6 +11,9 @@ public class Arguments
     @Parameter(names = "-browser", description = "HtmlUnit browser")
     private String browser = "default";
 
+    @Parameter(names = "-verbose", description = "HtmlUnit logs vomit")
+    private boolean verbose = false;
+
     public BrowserVersion getBrowser()
     {
         switch (this.browser.toLowerCase())
@@ -31,6 +34,11 @@ public class Arguments
                 System.exit(1);
                 return null;
         }
+    }
+
+    public boolean getVerbose()
+    {
+        return this.verbose;
     }
 }
 

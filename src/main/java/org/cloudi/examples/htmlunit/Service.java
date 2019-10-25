@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.io.IOException;
 import com.ericsson.otp.erlang.OtpErlangPid;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import org.cloudi.API;
@@ -43,7 +45,8 @@ public class Service implements Runnable
     {
         try
         {
-            this.api.subscribe("render", this::render);
+            this.api.subscribe("render/get", this::render);
+            this.api.subscribe("render/post", this::render);
             this.api.poll();
         }
         catch (API.TerminateException e)
@@ -54,6 +57,17 @@ public class Service implements Runnable
         {
             e.printStackTrace(Main.err);
         }
+    }
+
+    private WebClient createWebClient()
+    {
+        final WebClient webClient = new WebClient();
+        final WebClientOptions options = webClient.getOptions();
+        options.setThrowExceptionOnFailingStatusCode(false);
+        options.setThrowExceptionOnScriptError(false);
+        options.setPrintContentOnFailingStatusCode(false);
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        return webClient;
     }
 
     public Object render(Integer request_type, String name, String pattern,
@@ -68,11 +82,8 @@ public class Service implements Runnable
         if (url != null)
         {
             final ArrayList<String> xpath = request_parameters.remove("xpath");
-            try
+            try (final WebClient webClient = createWebClient())
             {
-                final WebClient webClient = new WebClient();
-                webClient.getOptions()
-                         .setThrowExceptionOnFailingStatusCode(false);
                 final HtmlPage page = webClient.getPage(url.get(0));
                 webClient.waitForBackgroundJavaScriptStartingBefore(timeout);
 
