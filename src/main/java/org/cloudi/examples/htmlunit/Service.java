@@ -46,7 +46,6 @@ public class Service implements Runnable
         try
         {
             this.api.subscribe("render/get", this::render);
-            this.api.subscribe("render/post", this::render);
             this.api.poll();
         }
         catch (API.TerminateException e)
