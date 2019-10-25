@@ -84,8 +84,9 @@ public class Service implements Runnable
             final ArrayList<String> xpath = request_parameters.remove("xpath");
             try (final WebClient webClient = createWebClient(timeout))
             {
+                final int timeout_js = timeout / 2;
                 final HtmlPage page = webClient.getPage(url.get(0));
-                webClient.waitForBackgroundJavaScriptStartingBefore(timeout);
+                webClient.waitForBackgroundJavaScriptStartingBefore(timeout_js);
 
                 if (xpath != null)
                 {

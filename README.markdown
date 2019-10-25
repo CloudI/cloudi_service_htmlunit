@@ -3,6 +3,17 @@
 
 [![Build Status](https://travis-ci.org/CloudI/cloudi_service_htmlunit.png)](https://travis-ci.org/CloudI/cloudi_service_htmlunit)
 
+WHY?
+----
+
+For web scraping modern websites it is necessary to use the rendered result
+after JavaScript has modified the contents.  The `cloudi_service_htmlunit`
+CloudI service provides the rendered result as XML while isolating any
+problems that may exist in the HtmlUnit source code.  Browser source code
+is typically known for instability and HtmlUnit has had memory consumption
+problems in the past.  However, `cloudi_service_htmlunit` provides reliable
+HtmlUnit processing while tolerating transient HtmlUnit bugs.
+
 BUILD
 -----
 
