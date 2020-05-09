@@ -161,6 +161,16 @@ public class Service implements Runnable
         return new ObjectOutputStream(new FileOutputStream(file_path));
     }
 
+    private byte[][] successResponse()
+    {
+        HashMap<String, ArrayList<String>> info =
+            new HashMap<String, ArrayList<String>>();
+        ArrayList<String> value = new ArrayList<String>();
+        value.add("204");
+        info.put("status", value);
+        return new byte[][]{this.api.info_key_value_new(info), null};
+    }
+
     @SuppressWarnings("unchecked")
     public Object cookiesLoad(Integer request_type,
                               String name, String pattern,
@@ -193,16 +203,6 @@ public class Service implements Runnable
             response = successResponse();
         }
         return response;
-    }
-
-    private byte[][] successResponse()
-    {
-        HashMap<String, ArrayList<String>> info =
-            new HashMap<String, ArrayList<String>>();
-        ArrayList<String> value = new ArrayList<String>();
-        value.add("202");
-        info.put("status", value);
-        return new byte[][]{this.api.info_key_value_new(info), null};
     }
 
     public Object cookiesStore(Integer request_type,
