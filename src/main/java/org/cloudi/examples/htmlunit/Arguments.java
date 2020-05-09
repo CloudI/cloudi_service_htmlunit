@@ -11,6 +11,9 @@ public class Arguments
     @Parameter(names = "-browser", description = "HtmlUnit browser")
     private String browser = "default";
 
+    @Parameter(names = "-cookies-file", description = "HtmlUnit cookies file")
+    private String cookies_file = "/tmp/htmlunit_cookies.ser";
+
     @Parameter(names = "-verbose", description = "HtmlUnit logs vomit")
     private boolean verbose = false;
 
@@ -34,6 +37,11 @@ public class Arguments
                 System.exit(1);
                 return null;
         }
+    }
+
+    public String getCookiesFilePath()
+    {
+        return this.cookies_file;
     }
 
     public boolean getVerbose()

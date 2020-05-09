@@ -31,6 +31,19 @@
   </scm>
   <build>
     <plugins>
+      <!-- turn on javac Xlint warnings
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <compilerArgs>
+            <arg>-verbose</arg>
+            <arg>-Xlint:all,-options,-path</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -80,11 +93,23 @@
       </plugin>
     </plugins>
   </build>
+  <!-- For using a local Java CloudI API jar:
+       (until 1.8.1 release, use this)
+
+       mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/lib/cloudi-1.8.0/api/java/cloudi.jar -DgroupId=org.cloudi -DartifactId=cloudi_api_java -Dversion=1.8.0-SNAPSHOT -Dpackaging=jar -DlocalRepositoryPath=lib
+  <repositories>
+    <repository>
+      <id>local-dependencies</id>
+      <url>file://${basedir}/lib</url>
+    </repository>
+  </repositories>
+    -->
   <dependencies>
     <dependency>
       <groupId>org.cloudi</groupId>
       <artifactId>cloudi_api_java</artifactId>
-      <version>1.8.0</version>
+      <!--<version>1.8.0-SNAPSHOT</version>-->
+      <version>1.8.1</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
