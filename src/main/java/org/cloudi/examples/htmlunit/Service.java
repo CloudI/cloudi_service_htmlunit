@@ -78,9 +78,9 @@ public class Service implements Runnable
         {
             this.api.subscribe("render/get", this::render);
             this.api.subscribe("cache/clear/get", this::cacheClear);
-            this.api.subscribe("cookies/load/get", Service.cookiesLoad);
-            this.api.subscribe("cookies/store/get", Service.cookiesStore);
-            this.api.subscribe("cookies/clear/get", Service.cookiesClear);
+            this.api.subscribe("cookies/load/get", Service::cookiesLoad);
+            this.api.subscribe("cookies/store/get", Service::cookiesStore);
+            this.api.subscribe("cookies/clear/get", Service::cookiesClear);
             this.api.poll();
         }
         catch (API.TerminateException e)
