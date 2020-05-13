@@ -36,6 +36,7 @@ import org.cloudi.API;
 public class Service implements Runnable
 {
     private API api;
+    private int thread_index;
     private Cache cache;
     private static CookieManager cookies = new CookieManager();
     private static final Set<String> request_headers_ignored =
@@ -53,7 +54,6 @@ public class Service implements Runnable
         try
         {
             this.api = new API(thread_index);
-            this.cache = new Cache();
         }
         catch (API.InvalidInputException e)
         {
@@ -70,6 +70,8 @@ public class Service implements Runnable
             Main.error(this, "terminate before initialization");
             System.exit(1);
         }
+        this.thread_index = thread_index;
+        this.cache = new Cache();
     }
 
     public void run()
@@ -78,9 +80,14 @@ public class Service implements Runnable
         {
             this.api.subscribe("render/get", this::render);
             this.api.subscribe("cache/clear/get", this::cacheClear);
-            this.api.subscribe("cookies/load/get", Service::cookiesLoad);
-            this.api.subscribe("cookies/store/get", Service::cookiesStore);
-            this.api.subscribe("cookies/clear/get", Service::cookiesClear);
+
+            if (this.thread_index == 0)
+            {
+                this.api.subscribe("cookies/load/get", Service::cookiesLoad);
+                this.api.subscribe("cookies/store/get", Service::cookiesStore);
+                this.api.subscribe("cookies/clear/get", Service::cookiesClear);
+            }
+
             this.api.poll();
         }
         catch (API.TerminateException e)
