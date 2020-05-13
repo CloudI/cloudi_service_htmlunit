@@ -77,10 +77,10 @@ public class Service implements Runnable
         try
         {
             this.api.subscribe("render/get", this::render);
-            this.api.subscribe("cookies/load/get", this::cookiesLoad);
-            this.api.subscribe("cookies/store/get", this::cookiesStore);
-            this.api.subscribe("cookies/clear/get", this::cookiesClear);
             this.api.subscribe("cache/clear/get", this::cacheClear);
+            this.api.subscribe("cookies/load/get", Service.cookiesLoad);
+            this.api.subscribe("cookies/store/get", Service.cookiesStore);
+            this.api.subscribe("cookies/clear/get", Service.cookiesClear);
             this.api.poll();
         }
         catch (API.TerminateException e)
@@ -114,13 +114,13 @@ public class Service implements Runnable
     {
         byte[][] response = null;
         HashMap<String, ArrayList<String>> request_parameters =
-            this.api.info_key_value_parse(request);
+            API.info_key_value_parse(request);
         final ArrayList<String> url = request_parameters.remove("url");
         if (url != null)
         {
             final ArrayList<String> xpath = request_parameters.remove("xpath");
             HashMap<String, ArrayList<String>> request_info_parameters =
-                this.api.info_key_value_parse(request_info);
+                API.info_key_value_parse(request_info);
             try (final WebClient client = createWebClient(timeout))
             {
                 final int timeout_js = timeout / 2;
@@ -130,7 +130,7 @@ public class Service implements Runnable
                      request_info_parameters.entrySet())
                 {
                     final String header_key = request_header.getKey();
-                    if (request_headers_ignored.contains(header_key))
+                    if (Service.request_headers_ignored.contains(header_key))
                         continue;
                     for (String header_value : request_header.getValue())
                     {
@@ -161,14 +161,13 @@ public class Service implements Runnable
                 {
                     final String header_key =
                         client_response_header.getName().toLowerCase();
-                    if (response_headers_ignored.contains(header_key))
+                    if (Service.response_headers_ignored.contains(header_key))
                         continue;
                     response_header.put(header_key,
                         Arrays.asList(client_response_header.getValue()));
                 }
-                response = new byte[][]{
-                    this.api.info_key_value_new(response_header),
-                    response_body};
+                response = new byte[][]{API.info_key_value_new(response_header),
+                                        response_body};
             }
             catch (FailingHttpStatusCodeException e)
             {
@@ -182,7 +181,7 @@ public class Service implements Runnable
         return response;
     }
 
-    private ObjectInputStream getCookiesFileIn()
+    private static ObjectInputStream getCookiesFileIn()
         throws FileNotFoundException,
                IOException
     {
@@ -190,7 +189,7 @@ public class Service implements Runnable
         return new ObjectInputStream(new FileInputStream(file_path));
     }
 
-    private ObjectOutputStream getCookiesFileOut()
+    private static ObjectOutputStream getCookiesFileOut()
         throws FileNotFoundException,
                IOException
     {
@@ -198,7 +197,8 @@ public class Service implements Runnable
         return new ObjectOutputStream(new FileOutputStream(file_path));
     }
 
-    private void cookieDomainStore(Cookie cookie, Map<String, Integer> domains)
+    private static void cookieDomainStore(Cookie cookie,
+                                          Map<String, Integer> domains)
     {
         String domain = cookie.getDomain();
         if (domain == null)
@@ -209,46 +209,57 @@ public class Service implements Runnable
         domains.put(domain, count + 1);
     }
 
-    private void logCookieDomains(Map<String, Integer> domains, boolean stored)
+    private static void logCookieDomains(Map<String, Integer> domains,
+                                         boolean stored)
     {
         final String action = stored ? "stored" : "loaded";
         final String direction = stored ? "to" : "from";
         final StringBuilder domains_output = new StringBuilder();
         for (Map.Entry<String, Integer> domain : domains.entrySet())
         {
-            domains_output.append(action);
-            domains_output.append(" \"");
-            domains_output.append(domain.getKey());
-            domains_output.append("\" (count = ");
-            domains_output.append(domain.getValue().intValue());
-            domains_output.append(")");
-            domains_output.append("\n");
+            domains_output.append(action)
+                          .append(" \"")
+                          .append(domain.getKey())
+                          .append("\" (count = ")
+                          .append(domain.getValue().intValue())
+                          .append(")")
+                          .append("\n");
         }
-        domains_output.append(direction);
-        domains_output.append(" cookies-file \"");
-        domains_output.append(Main.arguments().getCookiesFilePath());
-        domains_output.append("\"\n");
+        domains_output.append(direction)
+                      .append(" cookies-file \"")
+                      .append(Main.arguments().getCookiesFilePath())
+                      .append("\"\n");
         Main.out.print(domains_output.toString());
     }
 
-    private byte[][] successResponse()
+    private static byte[][] successResponse()
     {
         HashMap<String, List<String>> info =
             new HashMap<String, List<String>>();
         info.put("status", Arrays.asList("204"));
-        return new byte[][]{this.api.info_key_value_new(info), null};
+        return new byte[][]{API.info_key_value_new(info), null};
+    }
+
+    public Object cacheClear(Integer request_type,
+                             String name, String pattern,
+                             byte[] request_info, byte[] request,
+                             Integer timeout, Byte priority,
+                             byte[] trans_id, OtpErlangPid pid)
+    {
+        this.cache.clear();
+        return Service.successResponse();
     }
 
     @SuppressWarnings("unchecked")
-    public Object cookiesLoad(Integer request_type,
-                              String name, String pattern,
-                              byte[] request_info, byte[] request,
-                              Integer timeout, Byte priority,
-                              byte[] trans_id, OtpErlangPid pid)
+    public static Object cookiesLoad(Integer request_type,
+                                     String name, String pattern,
+                                     byte[] request_info, byte[] request,
+                                     Integer timeout, Byte priority,
+                                     byte[] trans_id, OtpErlangPid pid)
     {
         byte[][] response = null;
         Set<Cookie> cookies_loaded = null;
-        try (ObjectInputStream in = getCookiesFileIn())
+        try (ObjectInputStream in = Service.getCookiesFileIn())
         {
             cookies_loaded = (Set<Cookie>) in.readObject();
         }
@@ -267,35 +278,35 @@ public class Service implements Runnable
                 new HashMap<String, Integer>();
             for (Cookie cookie : cookies_loaded)
             {
-                cookieDomainStore(cookie, domains_logged);
+                Service.cookieDomainStore(cookie, domains_logged);
                 cookies_new.addCookie(cookie);
             }
-            logCookieDomains(domains_logged, false);
+            Service.logCookieDomains(domains_logged, false);
             Service.cookies = cookies_new;
-            response = successResponse();
+            response = Service.successResponse();
         }
         return response;
     }
 
-    public Object cookiesStore(Integer request_type,
-                               String name, String pattern,
-                               byte[] request_info, byte[] request,
-                               Integer timeout, Byte priority,
-                               byte[] trans_id, OtpErlangPid pid)
+    public static Object cookiesStore(Integer request_type,
+                                      String name, String pattern,
+                                      byte[] request_info, byte[] request,
+                                      Integer timeout, Byte priority,
+                                      byte[] trans_id, OtpErlangPid pid)
     {
         byte[][] response = null;
-        try (ObjectOutputStream out = getCookiesFileOut())
+        try (ObjectOutputStream out = Service.getCookiesFileOut())
         {
             Set<Cookie> cookies_stored = Service.cookies.getCookies();
             final Map<String, Integer> domains_logged =
                 new HashMap<String, Integer>();
             for (Cookie cookie : cookies_stored)
             {
-                cookieDomainStore(cookie, domains_logged);
+                Service.cookieDomainStore(cookie, domains_logged);
             }
             out.writeObject(cookies_stored);
-            logCookieDomains(domains_logged, true);
-            response = successResponse();
+            Service.logCookieDomains(domains_logged, true);
+            response = Service.successResponse();
         }
         catch (IOException e)
         {
@@ -304,23 +315,13 @@ public class Service implements Runnable
         return response;
     }
 
-    public Object cookiesClear(Integer request_type,
-                               String name, String pattern,
-                               byte[] request_info, byte[] request,
-                               Integer timeout, Byte priority,
-                               byte[] trans_id, OtpErlangPid pid)
+    public static Object cookiesClear(Integer request_type,
+                                      String name, String pattern,
+                                      byte[] request_info, byte[] request,
+                                      Integer timeout, Byte priority,
+                                      byte[] trans_id, OtpErlangPid pid)
     {
         Service.cookies.clearCookies();
-        return successResponse();
-    }
-
-    public Object cacheClear(Integer request_type,
-                             String name, String pattern,
-                             byte[] request_info, byte[] request,
-                             Integer timeout, Byte priority,
-                             byte[] trans_id, OtpErlangPid pid)
-    {
-        this.cache.clear();
-        return successResponse();
+        return Service.successResponse();
     }
 }

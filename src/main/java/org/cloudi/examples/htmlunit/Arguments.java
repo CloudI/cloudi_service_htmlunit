@@ -27,8 +27,7 @@ public class Arguments
             case "chrome":
                 return BrowserVersion.CHROME;
             case "firefox":
-            case "firefox_60":
-                return BrowserVersion.FIREFOX_60;
+                return BrowserVersion.FIREFOX;
             case "ie":
             case "internet_explorer":
                 return BrowserVersion.INTERNET_EXPLORER;
