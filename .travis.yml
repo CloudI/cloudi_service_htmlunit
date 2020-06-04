@@ -1,10 +1,5 @@
 language: java
-# disable build until 1.8.1 Java CloudI API maven package exists
-before_install: exit 0
-install: exit 0
-before_script: exit 0
-script: exit 0
-#script: mvn package
+script: mvn package
 notifications:
   email:
     recipients:
