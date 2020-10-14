@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,15 +25,13 @@ public class CookieFile
     private static final char TAB = '\t';
 
     private static BufferedReader open_read(final String file_path)
-        throws FileNotFoundException,
-               IOException
+        throws IOException
     {
         return new BufferedReader(new FileReader(file_path));
     }
 
     private static PrintWriter open_write(final String file_path)
-        throws FileNotFoundException,
-               IOException
+        throws IOException
     {
         return new PrintWriter(new FileOutputStream(file_path));
     }
