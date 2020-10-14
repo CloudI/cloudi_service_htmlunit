@@ -12,7 +12,7 @@ public class Arguments
     private String browser = "default";
 
     @Parameter(names = "-cookies-file", description = "HtmlUnit cookies file")
-    private String cookies_file = "/tmp/htmlunit_cookies.ser";
+    private String cookies_file = "/tmp/htmlunit_cookies.txt";
 
     @Parameter(names = "-verbose", description = "HtmlUnit logs vomit")
     private boolean verbose = false;

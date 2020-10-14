@@ -9,14 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.lang.ClassNotFoundException;
 import java.lang.StringBuilder;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import com.ericsson.otp.erlang.OtpErlangPid;
 import com.gargoylesoftware.htmlunit.Cache;
@@ -188,22 +182,6 @@ public class Service implements Runnable
         return response;
     }
 
-    private static ObjectInputStream getCookiesFileIn()
-        throws FileNotFoundException,
-               IOException
-    {
-        final String file_path = Main.arguments().getCookiesFilePath();
-        return new ObjectInputStream(new FileInputStream(file_path));
-    }
-
-    private static ObjectOutputStream getCookiesFileOut()
-        throws FileNotFoundException,
-               IOException
-    {
-        final String file_path = Main.arguments().getCookiesFilePath();
-        return new ObjectOutputStream(new FileOutputStream(file_path));
-    }
-
     private static void cookieDomainStore(Cookie cookie,
                                           Map<String, Integer> domains)
     {
@@ -257,7 +235,6 @@ public class Service implements Runnable
         return Service.successResponse();
     }
 
-    @SuppressWarnings("unchecked")
     public static Object cookiesLoad(Integer request_type,
                                      String name, String pattern,
                                      byte[] request_info, byte[] request,
@@ -265,19 +242,7 @@ public class Service implements Runnable
                                      byte[] trans_id, OtpErlangPid pid)
     {
         byte[][] response = null;
-        Set<Cookie> cookies_loaded = null;
-        try (ObjectInputStream in = Service.getCookiesFileIn())
-        {
-            cookies_loaded = (Set<Cookie>) in.readObject();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace(Main.err);
-        }
-        catch (ClassNotFoundException e)
-        {
-            e.printStackTrace(Main.err);
-        }
+        Set<Cookie> cookies_loaded = CookieFile.load();
         if (cookies_loaded != null)
         {
             final CookieManager cookies_new = new CookieManager();
@@ -302,22 +267,17 @@ public class Service implements Runnable
                                       byte[] trans_id, OtpErlangPid pid)
     {
         byte[][] response = null;
-        try (ObjectOutputStream out = Service.getCookiesFileOut())
+        Set<Cookie> cookies_current = Service.cookies.getCookies();
+        if (CookieFile.store(cookies_current))
         {
-            Set<Cookie> cookies_stored = Service.cookies.getCookies();
             final Map<String, Integer> domains_logged =
                 new HashMap<String, Integer>();
-            for (Cookie cookie : cookies_stored)
+            for (Cookie cookie : cookies_current)
             {
                 Service.cookieDomainStore(cookie, domains_logged);
             }
-            out.writeObject(cookies_stored);
             Service.logCookieDomains(domains_logged, true);
             response = Service.successResponse();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace(Main.err);
         }
         return response;
     }
