@@ -22,7 +22,7 @@ public class CookieFile
     private static final int NAME = 5;
     private static final int VALUE = 6;
 
-    private static final char TAB = '\t';
+    private static final char DELIMITER = '\t';
 
     private static BufferedReader open_read(final String file_path)
         throws IOException
@@ -48,22 +48,43 @@ public class CookieFile
 
     private static Date epoch_unix_parse(final String value)
     {
-        return new Date(Long.parseLong(value) * 1000);
+        final long seconds = Long.parseLong(value);
+        if (seconds == 0)
+            return null;
+        return new Date(seconds * 1000);
     }
 
     private static String epoch_unix_format(final Date value)
     {
+        if (value == null)
+            return "0";
         return Long.valueOf(value.getTime() / 1000).toString();
+    }
+
+    private static String string_parse(final String value,
+                                       final String value_null)
+    {
+        if (value == value_null)
+            return null;
+        return value;
+    }
+
+    private static String string_format(final String value,
+                                        final String value_default)
+    {
+        if (value == null)
+            return value_default;
+        return value;
     }
 
     public static Set<Cookie> load()
     {
         final String file_path = Main.arguments().getCookiesFilePath();
+        long line_number = 0;
         Set<Cookie> cookies = new HashSet<Cookie>();
         try (BufferedReader reader = open_read(file_path))
         {
             String line;
-            long line_number = 0;
             while ((line = reader.readLine()) != null)
             {
                 line_number++;
@@ -81,26 +102,31 @@ public class CookieFile
                 if (comment)
                     continue;
                 String[] tokens = line.split("\\t");
-                final String domain = tokens[DOMAIN];
+                final String domain = string_parse(tokens[DOMAIN], "");
                 final boolean subdomains = boolean_parse(tokens[SUBDOMAINS]);
-                final String path = tokens[PATH];
+                final String path = string_parse(tokens[PATH], "/");
                 final boolean secure = boolean_parse(tokens[SECURE]);
                 final Date expires = epoch_unix_parse(tokens[EXPIRES]);
-                final String name = tokens[NAME];
-                final String value = tokens[VALUE];
+                String name = "";
+                String value = "";
+                if (tokens.length > NAME)
+                {
+                    name = tokens[NAME];
+                    if (tokens.length > VALUE)
+                        value = tokens[VALUE];
+                }
                 final boolean added = cookies.add(
                     new Cookie(domain, name, value,
                                path, expires, secure, http_only));
                 if (added == false)
-                {
-                    throw new IOException("Failed to add " + file_path +
-                                          ":" + line_number + " cookie!");
-                }
+                    throw new IOException("Failed to add cookie!");
             }
         }
         catch (IOException e)
         {
             cookies = null;
+            if (line_number > 0)
+                Main.err.println("Error at " + file_path + ":" + line_number);
             e.printStackTrace(Main.err);
         }
         return cookies;
@@ -112,24 +138,29 @@ public class CookieFile
         boolean stored = false;
         try (PrintWriter writer = open_write(file_path))
         {
-            writer.println("# cloudi_service_htmlunit generated cookie file");
+            writer.println("# Netscape HTTP Cookie File");
+            writer.println("# https://curl.haxx.se/rfc/cookie_spec.html");
+            writer.println("# This is a generated file! Do not edit.");
+            writer.println("");
+
             for (Cookie cookie : cookies)
             {
                 final StringBuilder line = new StringBuilder(80);
                 if (cookie.isHttpOnly())
                     line.append("#HttpOnly_");
-                line.append(cookie.getDomain())
-                    .append(TAB)
-                    .append(boolean_format(true))
-                    .append(TAB)
-                    .append(cookie.getPath())
-                    .append(TAB)
+                final String domain = string_format(cookie.getDomain(), "");
+                line.append(domain)
+                    .append(DELIMITER)
+                    .append(boolean_format(domain.startsWith(".")))
+                    .append(DELIMITER)
+                    .append(string_format(cookie.getPath(), "/"))
+                    .append(DELIMITER)
                     .append(boolean_format(cookie.isSecure()))
-                    .append(TAB)
+                    .append(DELIMITER)
                     .append(epoch_unix_format(cookie.getExpires()))
-                    .append(TAB)
+                    .append(DELIMITER)
                     .append(cookie.getName())
-                    .append(TAB)
+                    .append(DELIMITER)
                     .append(cookie.getValue());
                 writer.println(line.toString());
             }
