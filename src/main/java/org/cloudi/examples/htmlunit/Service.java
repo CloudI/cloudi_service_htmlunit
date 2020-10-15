@@ -72,15 +72,24 @@ public class Service implements Runnable
     {
         try
         {
-            this.api.subscribe("render/get", this::render);
-            this.api.subscribe("cache/clear/get", this::cacheClear);
-
             if (this.thread_index == 0)
             {
+                Set<Cookie> cookies_loaded = CookieFile.load(true);
+                if (cookies_loaded != null)
+                {
+                    final CookieManager cookies_init = new CookieManager();
+                    for (Cookie cookie : cookies_loaded)
+                    {
+                        cookies_init.addCookie(cookie);
+                    }
+                    Service.cookies = cookies_init;
+                }
                 this.api.subscribe("cookies/load/get", Service::cookiesLoad);
                 this.api.subscribe("cookies/store/get", Service::cookiesStore);
                 this.api.subscribe("cookies/clear/get", Service::cookiesClear);
             }
+            this.api.subscribe("render/get", this::render);
+            this.api.subscribe("cache/clear/get", this::cacheClear);
 
             this.api.poll();
         }
@@ -200,20 +209,24 @@ public class Service implements Runnable
         final String action = stored ? "stored" : "loaded";
         final String direction = stored ? "to" : "from";
         final StringBuilder domains_output = new StringBuilder();
+        long count_total = 0;
         for (Map.Entry<String, Integer> domain : domains.entrySet())
         {
+            final int count = domain.getValue().intValue();
             domains_output.append(action)
                           .append(" \"")
                           .append(domain.getKey())
                           .append("\" (count = ")
-                          .append(domain.getValue().intValue())
-                          .append(")")
-                          .append("\n");
+                          .append(count)
+                          .append(")\n");
+            count_total += count;
         }
         domains_output.append(direction)
                       .append(" cookies-file \"")
                       .append(Main.arguments().getCookiesFilePath())
-                      .append("\"\n");
+                      .append("\" (total = ")
+                      .append(count_total)
+                      .append(")\n");
         Main.out.print(domains_output.toString());
     }
 
@@ -242,7 +255,7 @@ public class Service implements Runnable
                                      byte[] trans_id, OtpErlangPid pid)
     {
         byte[][] response = null;
-        Set<Cookie> cookies_loaded = CookieFile.load();
+        Set<Cookie> cookies_loaded = CookieFile.load(false);
         if (cookies_loaded != null)
         {
             final CookieManager cookies_new = new CookieManager();
