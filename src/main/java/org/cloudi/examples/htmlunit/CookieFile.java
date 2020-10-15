@@ -123,7 +123,7 @@ public class CookieFile
                     throw new IOException("Failed to add cookie!");
             }
         }
-        catch (IOException e)
+        catch (Throwable e)
         {
             if (fail_silently == false)
                 printLoadError(file_path, line_number, e);
