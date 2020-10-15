@@ -136,11 +136,12 @@ public class CookieFile
                                        final long line_number,
                                        final Throwable e)
     {
-        final PrintWriter writer = new PrintWriter(new StringWriter());
+        final StringWriter result = new StringWriter();
+        final PrintWriter writer = new PrintWriter(result, true);
         if (line_number > 0)
             writer.println("Error at " + file_path + ":" + line_number);
         e.printStackTrace(writer);
-        Main.err.print(writer.toString());
+        Main.err.print(result.toString());
     }
 
     public static boolean store(Set<Cookie> cookies)
