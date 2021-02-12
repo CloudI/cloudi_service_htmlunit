@@ -30,7 +30,7 @@ import org.cloudi.API;
 public class Service implements Runnable
 {
     private API api;
-    private int thread_index;
+    private final int thread_index;
     private Cache cache;
     private static CookieManager cookies = new CookieManager();
     private static final Set<String> request_headers_ignored =
@@ -45,25 +45,7 @@ public class Service implements Runnable
 
     public Service(final int thread_index)
     {
-        try
-        {
-            this.api = new API(thread_index);
-        }
-        catch (API.InvalidInputException e)
-        {
-            e.printStackTrace(Main.err);
-            System.exit(1);
-        }
-        catch (API.MessageDecodingException e)
-        {
-            e.printStackTrace(Main.err);
-            System.exit(1);
-        }
-        catch (API.TerminateException e)
-        {
-            Main.error(this, "terminate before initialization");
-            System.exit(1);
-        }
+        this.api = null;
         this.thread_index = thread_index;
         this.cache = new Cache();
     }
@@ -72,6 +54,7 @@ public class Service implements Runnable
     {
         try
         {
+            this.api = new API(this.thread_index);
             if (this.thread_index == 0)
             {
                 Set<Cookie> cookies_loaded = CookieFile.load(true);
