@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.lang.StringBuilder;
+import java.io.ByteArrayOutputStream;//XXX remove after 2.0.3 release
 import java.io.IOException;
 import java.net.URL;
 import com.ericsson.otp.erlang.OtpErlangPid;
@@ -147,8 +148,8 @@ public class Service implements Runnable
                 }
 
                 final WebResponse client_response = page.getWebResponse();
-                final Map<String, List<String>> response_header =
-                    new HashMap<String, List<String>>();
+                final HashMap<String, ArrayList<String>> response_header =
+                    new HashMap<String, ArrayList<String>>();
                 for (NameValuePair client_response_header :
                      client_response.getResponseHeaders())
                 {
@@ -156,19 +157,22 @@ public class Service implements Runnable
                         client_response_header.getName().toLowerCase();
                     if (Service.response_headers_ignored.contains(header_key))
                         continue;
-                    final List<String> header_value =
+                    ArrayList<String> header_value =
                         response_header.get(header_key);
                     if (header_value == null)
                     {
-                        response_header.put(header_key,
-                            Arrays.asList(client_response_header.getValue()));
+                        header_value = new ArrayList<String>();
+                        header_value.add(client_response_header.getValue());
+                        response_header.put(header_key, header_value);
                     }
                     else
                     {
                         header_value.add(client_response_header.getValue());
                     }
                 }
-                response = new byte[][]{API.info_key_value_new(response_header),
+                //XXX replace Service.key_value_new
+                //    with API.info_key_value_new after 2.0.3 release
+                response = new byte[][]{Service.key_value_new(response_header),
                                         response_body};
             }
             catch (FailingHttpStatusCodeException e)
@@ -181,6 +185,28 @@ public class Service implements Runnable
             }
         }
         return response;
+    }
+
+    private static byte[] key_value_new(final HashMap<String,
+                                                      ArrayList<String>> pairs)
+    {
+        final boolean response = true;
+        final ByteArrayOutputStream text = new ByteArrayOutputStream(1024);
+        for (HashMap.Entry<String, ArrayList<String>> pair : pairs.entrySet())
+        {
+            final byte[] key_bytes = pair.getKey().getBytes();
+            for (String value : pair.getValue())
+            {
+                final byte[] value_bytes = value.getBytes();
+                text.write(key_bytes, 0, key_bytes.length);
+                text.write(0);
+                text.write(value_bytes, 0, value_bytes.length);
+                text.write(0);
+            }
+        }
+        if (response && text.size() == 0)
+            text.write(0);
+        return text.toByteArray();
     }
 
     private static void cookieDomainStore(Cookie cookie,
