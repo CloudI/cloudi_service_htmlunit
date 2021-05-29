@@ -156,8 +156,17 @@ public class Service implements Runnable
                         client_response_header.getName().toLowerCase();
                     if (Service.response_headers_ignored.contains(header_key))
                         continue;
-                    response_header.put(header_key,
-                        Arrays.asList(client_response_header.getValue()));
+                    final List<String> header_value =
+                        response_header.get(header_key);
+                    if (header_value == null)
+                    {
+                        response_header.put(header_key,
+                            Arrays.asList(client_response_header.getValue()));
+                    }
+                    else
+                    {
+                        header_value.add(client_response_header.getValue());
+                    }
                 }
                 response = new byte[][]{API.info_key_value_new(response_header),
                                         response_body};
