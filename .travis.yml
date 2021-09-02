@@ -1,4 +1,7 @@
+dist: bionic
 language: java
+jdk:
+  - openjdk11
 script: mvn package
 notifications:
   email:

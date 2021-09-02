@@ -17,7 +17,7 @@ HtmlUnit processing while tolerating transient HtmlUnit bugs.
 BUILD
 -----
 
-Use maven and JDK >= 1.8 to build:
+Use maven and JDK >= 1.11 to build:
 
     mvn clean package
 

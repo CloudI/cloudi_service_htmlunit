@@ -3,8 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.11</maven.compiler.target>
+    <maven.compiler.source>1.11</maven.compiler.source>
+    <!-- version above as maven-compiler-plugin release configuration -->
   </properties>
   <groupId>org.cloudi.examples.htmlunit</groupId>
   <artifactId>cloudi_service_htmlunit</artifactId>
@@ -41,11 +42,13 @@
             <arg>-verbose</arg>
             <arg>-Xlint:all,-options,-path</arg>
           </compilerArgs>
+          <release>11</release>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.2.0</version>
         <configuration>
           <outputDirectory>
             ${project.build.directory}
@@ -53,8 +56,9 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.3.0</version>
         <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -100,7 +104,7 @@
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
-      <version>2.50.0</version>
+      <version>2.52.0</version>
     </dependency>
     <dependency>
       <groupId>com.beust</groupId>
