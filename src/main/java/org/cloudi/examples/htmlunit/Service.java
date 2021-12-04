@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.lang.StringBuilder;
-import java.io.ByteArrayOutputStream;//XXX remove after 2.0.3 release
 import java.io.IOException;
 import java.net.URL;
 import com.ericsson.otp.erlang.OtpErlangPid;
@@ -170,9 +169,7 @@ public class Service implements Runnable
                         header_value.add(client_response_header.getValue());
                     }
                 }
-                //XXX replace Service.key_value_new
-                //    with API.info_key_value_new after 2.0.3 release
-                response = new byte[][]{Service.key_value_new(response_header),
+                response = new byte[][]{API.info_key_value_new(response_header),
                                         response_body};
             }
             catch (FailingHttpStatusCodeException e)
@@ -185,28 +182,6 @@ public class Service implements Runnable
             }
         }
         return response;
-    }
-
-    private static byte[] key_value_new(final HashMap<String,
-                                                      ArrayList<String>> pairs)
-    {
-        final boolean response = true;
-        final ByteArrayOutputStream text = new ByteArrayOutputStream(1024);
-        for (HashMap.Entry<String, ArrayList<String>> pair : pairs.entrySet())
-        {
-            final byte[] key_bytes = pair.getKey().getBytes();
-            for (String value : pair.getValue())
-            {
-                final byte[] value_bytes = value.getBytes();
-                text.write(key_bytes, 0, key_bytes.length);
-                text.write(0);
-                text.write(value_bytes, 0, value_bytes.length);
-                text.write(0);
-            }
-        }
-        if (response && text.size() == 0)
-            text.write(0);
-        return text.toByteArray();
     }
 
     private static void cookieDomainStore(Cookie cookie,
