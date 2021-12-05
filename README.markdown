@@ -37,7 +37,7 @@ Start the `cloudi_service_htmlunit` Java service:
              "-server "
              "-ea:org.cloudi... "
              "-Xms1g -Xmx1g "
-             "-jar $PWD/target/cloudi_service_htmlunit-2.0.2-jar-with-dependencies.jar "
+             "-jar $PWD/target/cloudi_service_htmlunit-2.0.4-jar-with-dependencies.jar "
              "-browser default"},
       {count_thread, 4},
       {options,

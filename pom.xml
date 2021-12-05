@@ -3,14 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>1.11</maven.compiler.target>
-    <maven.compiler.source>1.11</maven.compiler.source>
-    <!-- version above as maven-compiler-plugin release configuration -->
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
   <groupId>org.cloudi.examples.htmlunit</groupId>
   <artifactId>cloudi_service_htmlunit</artifactId>
   <packaging>jar</packaging>
-  <version>2.0.3</version>
+  <version>2.0.4</version>
   <name>cloudi_service_htmlunit</name>
   <url>https://www.cloudi.org</url>
   <licenses>
@@ -42,7 +40,6 @@
             <arg>-verbose</arg>
             <arg>-Xlint:all,-options,-path</arg>
           </compilerArgs>
-          <release>11</release>
         </configuration>
       </plugin>
       <plugin>
@@ -87,7 +84,7 @@
   </build>
   <!-- For using a local Java CloudI API jar:
 
-       mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/lib/cloudi-2.0.1/api/java/cloudi.jar -DgroupId=org.cloudi -DartifactId=cloudi_api_java -Dversion=2.0.1-SNAPSHOT -Dpackaging=jar -DlocalRepositoryPath=lib
+       mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/lib/cloudi-2.0.4/api/java/cloudi.jar -DgroupId=org.cloudi -DartifactId=cloudi_api_java -Dversion=2.0.4-SNAPSHOT -Dpackaging=jar -DlocalRepositoryPath=lib
   <repositories>
     <repository>
       <id>local-dependencies</id>
@@ -99,7 +96,7 @@
     <dependency>
       <groupId>org.cloudi</groupId>
       <artifactId>cloudi_api_java</artifactId>
-      <version>2.0.3</version>
+      <version>2.0.4</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
