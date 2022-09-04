@@ -84,14 +84,14 @@
   </build>
   <!-- For using a local Java CloudI API jar:
 
-       mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/lib/cloudi-2.0.4/api/java/cloudi.jar -DgroupId=org.cloudi -DartifactId=cloudi_api_java -Dversion=2.0.4-SNAPSHOT -Dpackaging=jar -DlocalRepositoryPath=lib
+       mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/lib/cloudi-2.0.4/api/java/cloudi.jar -DgroupId=org.cloudi -DartifactId=cloudi_api_java -Dversion=2.0.5-SNAPSHOT -Dpackaging=jar -DlocalRepositoryPath=lib
+    -->
   <repositories>
     <repository>
       <id>local-dependencies</id>
       <url>file://${basedir}/lib</url>
     </repository>
   </repositories>
-    -->
   <dependencies>
     <dependency>
       <groupId>org.cloudi</groupId>
@@ -101,7 +101,7 @@
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
-      <version>2.56.0</version>
+      <version>2.62.0</version>
     </dependency>
     <dependency>
       <groupId>com.beust</groupId>

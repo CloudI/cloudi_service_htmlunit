@@ -103,7 +103,7 @@ public class Service implements Runnable
     public Object render(Integer request_type, String name, String pattern,
                          byte[] request_info, byte[] request,
                          Integer timeout, Byte priority,
-                         byte[] trans_id, OtpErlangPid pid)
+                         byte[] trans_id, OtpErlangPid source)
     {
         byte[][] response = null;
         HashMap<String, ArrayList<String>> request_parameters =
@@ -235,7 +235,7 @@ public class Service implements Runnable
                              String name, String pattern,
                              byte[] request_info, byte[] request,
                              Integer timeout, Byte priority,
-                             byte[] trans_id, OtpErlangPid pid)
+                             byte[] trans_id, OtpErlangPid source)
     {
         this.cache.clear();
         return Service.successResponse();
@@ -245,7 +245,7 @@ public class Service implements Runnable
                                      String name, String pattern,
                                      byte[] request_info, byte[] request,
                                      Integer timeout, Byte priority,
-                                     byte[] trans_id, OtpErlangPid pid)
+                                     byte[] trans_id, OtpErlangPid source)
     {
         byte[][] response = null;
         Set<Cookie> cookies_loaded = CookieFile.load(false);
@@ -270,7 +270,7 @@ public class Service implements Runnable
                                       String name, String pattern,
                                       byte[] request_info, byte[] request,
                                       Integer timeout, Byte priority,
-                                      byte[] trans_id, OtpErlangPid pid)
+                                      byte[] trans_id, OtpErlangPid source)
     {
         byte[][] response = null;
         Set<Cookie> cookies_current = Service.cookies.getCookies();
@@ -292,7 +292,7 @@ public class Service implements Runnable
                                       String name, String pattern,
                                       byte[] request_info, byte[] request,
                                       Integer timeout, Byte priority,
-                                      byte[] trans_id, OtpErlangPid pid)
+                                      byte[] trans_id, OtpErlangPid source)
     {
         Service.cookies.clearCookies();
         return Service.successResponse();
