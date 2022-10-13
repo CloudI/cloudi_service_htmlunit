@@ -1,7 +1,7 @@
 [CloudI](https://cloudi.org) HtmlUnit Service
 =============================================
 
-[![Build Status](https://travis-ci.org/CloudI/cloudi_service_htmlunit.png)](https://travis-ci.org/CloudI/cloudi_service_htmlunit)
+[![Build Status](https://app.travis-ci.com/CloudI/cloudi_service_htmlunit.svg?branch=master)](https://app.travis-ci.com/CloudI/cloudi_service_htmlunit)
 
 WHY?
 ----
@@ -37,7 +37,7 @@ Start the `cloudi_service_htmlunit` Java service:
              "-server "
              "-ea:org.cloudi... "
              "-Xms1g -Xmx1g "
-             "-jar $PWD/target/cloudi_service_htmlunit-2.0.4-jar-with-dependencies.jar "
+             "-jar $PWD/target/cloudi_service_htmlunit-2.0.5-jar-with-dependencies.jar "
              "-browser default"},
       {count_thread, 4},
       {options,
