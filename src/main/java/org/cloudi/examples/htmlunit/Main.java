@@ -24,6 +24,7 @@ public class Main
 
     public static void main(String[] args_in)
     {
+        LoggingConfig.initialize();
         Arguments args_out = new Arguments();
         JCommander.newBuilder()
                   .addObject(args_out)
@@ -34,10 +35,7 @@ public class Main
         BrowserVersion.setDefault(Main.arguments().getBrowser());
         if (Main.arguments().getVerbose() == false)
         {
-            System.setProperty("org.apache.commons.logging.Log",
-                               "org.apache.commons.logging.impl.NoOpLog");
-            java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
-                                    .setLevel(Level.OFF);
+            LoggingConfig.getLogger().setLevel(Level.OFF);
         }
 
         try

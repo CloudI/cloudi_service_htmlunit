@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.lang.StringBuilder;
 import java.io.IOException;
 import java.net.URL;
@@ -70,6 +71,7 @@ public class Service implements Runnable
                 this.api.subscribe("cookies/load/get", Service::cookiesLoad);
                 this.api.subscribe("cookies/store/get", Service::cookiesStore);
                 this.api.subscribe("cookies/clear/get", Service::cookiesClear);
+                this.api.subscribe("logger/post", Service::loggerUpdate);
             }
             this.api.subscribe("render/get", this::render);
             this.api.subscribe("cache/clear/get", this::cacheClear);
@@ -295,6 +297,46 @@ public class Service implements Runnable
                                       byte[] trans_id, OtpErlangPid source)
     {
         Service.cookies.clearCookies();
+        return Service.successResponse();
+    }
+
+    public static Object loggerUpdate(Integer request_type,
+                                      String name, String pattern,
+                                      byte[] request_info, byte[] request,
+                                      Integer timeout, Byte priority,
+                                      byte[] trans_id, OtpErlangPid source)
+    {
+        String level_name = new String(request);
+        // allow CloudI/log4j logging levels
+        switch (level_name)
+        {
+            case "FATAL":
+            case "fatal":
+            case "ERROR":
+            case "error":
+                level_name = "SEVERE";
+                break;
+            case "WARN":
+            case "warn":
+                level_name = "WARNING";
+                break;
+            case "info":
+                level_name = "INFO";
+                break;
+            case "DEBUG":
+            case "debug":
+                level_name = "FINE";
+                break;
+            case "TRACE":
+            case "trace":
+                level_name = "FINEST";
+                break;
+            case "off":
+                level_name = "OFF";
+                break;
+        }
+        final Level level = Level.parse(level_name);
+        LoggingConfig.getLogger().setLevel(level);
         return Service.successResponse();
     }
 }
