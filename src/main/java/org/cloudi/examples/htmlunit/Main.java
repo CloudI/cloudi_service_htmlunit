@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import com.beust.jcommander.JCommander;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
+import org.htmlunit.BrowserVersion;
 import org.cloudi.API;
 
 public class Main

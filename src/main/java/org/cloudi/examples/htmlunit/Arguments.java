@@ -4,7 +4,7 @@
 package org.cloudi.examples.htmlunit;
 
 import com.beust.jcommander.Parameter;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
+import org.htmlunit.BrowserVersion;
 
 public class Arguments
 {
@@ -26,11 +26,12 @@ public class Arguments
                 return BrowserVersion.BEST_SUPPORTED;
             case "chrome":
                 return BrowserVersion.CHROME;
+            case "edge":
+                return BrowserVersion.EDGE;
             case "firefox":
                 return BrowserVersion.FIREFOX;
-            case "ie":
-            case "internet_explorer":
-                return BrowserVersion.INTERNET_EXPLORER;
+            case "firefox_esr":
+                return BrowserVersion.FIREFOX_ESR;
             default:
                 Main.error(this, "-browser %s is invalid!", this.browser);
                 System.exit(1);

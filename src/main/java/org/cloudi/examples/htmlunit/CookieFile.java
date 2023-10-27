@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import com.gargoylesoftware.htmlunit.util.Cookie;
+import org.htmlunit.util.Cookie;
 
 public class CookieFile
 {
